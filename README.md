@@ -57,16 +57,20 @@
 </table>
 
 <p align="center">
-  <b>Fibo Edit is the new edition to the Fibo Family - a set of models that follow the VGL (Visual GenAI Language) Paradigm.</b><br>
-  <b>This 8B parameter image-to-image diffusion model is designed for precise, deterministic, and controllable editing.</b>
+  <b>FIBO-Edit brings the power of structured prompt generation to image editing.</b><br>
+  Built on Fibo's</a> foundation and of JSON-native control (the new <a href="https://docs.bria.ai/vgl">VGL - Visual GenAI Language paradigm</a>), FIBO-Edit delivers precise, deterministic, and fully controllable edits. No ambiguity, no surprises.
   <b></b>
   <br><br>
 </p>
 
 <h2>🌍 What's Fibo Edit?</h2>
-<p>Unlike traditional edit models that rely on loose text prompts, <b>Fibo Edit</b> introduces a new paradigm of structured control. It operates on <b>Structured JSON inputs</b> paired with a source image and a mask, enabling explicit, interpretable, and repeatable editing workflows optimized for professional production environments.</p>
+<p>Most image editing models rely on loose, ambiguous text prompts, but not FIBO-Edit. FIBO-Edit introduces a new paradigm of structured control, operating on structured JSON inputs paired with a source image (and optionally a mask). This enables explicit, interpretable, and repeatable editing workflows optimized for professional production environments.</p>
 
-<p>Developed by Bria AI, Fibo Edit prioritizes transparency, legal safety, and granular control, ranking among the <b>top 3 editing models</b> in open benchmarks for its aesthetic quality and adherence.</p>
+<p>Developed by Bria AI, FIBO-Edit prioritizes transparency, legal safety, and granular control: ranking among the top models in open benchmarks for prompt adherence and quality.</p>
+
+
+<p>📄 <i>Technical report coming soon.</i> For architecture details, see <a href="https://huggingface.co/briaai/FIBO">FIBO</a>.</p>
+
 
 <h2> News</h2>
 <ul>
@@ -97,14 +101,13 @@
   <li><a href="https://docs.bria.ai/image-generation/v2-endpoints/image-edit">Bria.ai</a></li>
   <li><a href="https://fal.ai/models/bria/fibo-edit">Fal.ai</a></li>
   <li><a href="https://replicate.com/bria/fibo-edit">Replicate</a></li>
-  <li><a href="https://platform.bria.ai/labs/fibo-edit">Bria Fibo Lab</li>
+  <li><a href="https://platform.bria.ai/labs/fibo-edit">Bria Fibo Lab</a></li>
 </ul>
 
 <p><b>Source-Code & Weights</b></p>
-
 <ul>
-  <li>The model is open source for non-commercial use with <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.en">this license</a>.</li>
-  <li>For commercial use <a href="https://bria.ai/contact-us">Click here</a>.</li>
+  <li>The model is open source for non-commercial use with <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.en">this license</a> </li>
+  <li>For commercial use <a href="https://bria.ai/contact-us?hsCtaAttrib=114250296256">Click here</a>.</li>
 </ul>
     
 <h2>Quick Start Guide</h2>
@@ -117,23 +120,10 @@ cd Fibo-Edit
 </code></pre>
 
 <h3>Promptify Setup</h3>
-<p>The <code>edit_promptify</code> module uses a VLM to analyze images and generate structured JSON prompts. By default, it uses <a href="https://openrouter.ai">OpenRouter</a> to access the underlying VLM.</p>
-
-<p><b>Option 1: OpenRouter API (Recommended)</b></p>
-<ol>
-  <li>Create an account at <a href="https://openrouter.ai">openrouter.ai</a></li>
-  <li>Generate an API key from your dashboard</li>
-  <li>Set the API key as an environment variable:
-    <pre><code class="language-bash">export OPENROUTER_API_KEY=your_openrouter_api_key</code></pre>
-  </li>
-</ol>
-
-<p><b>Option 2: Use Your Own LLM (Advanced)</b></p>
-<p>For advanced users who prefer to use a different LLM provider, you can use the schemas and system prompts directly with any compatible model. The structured prompt schemas and system prompts are available in the <code>src/</code> directory and can be adapted for use with OpenAI, Anthropic, local models, or any other LLM of your choice.</p>
+<p>The repository currently supports only Gemini as the VLM to generate structured JSON prompts. Use <code class="language-bash">export GEMINI_API_KEY="your-api-key"</code> to set your private API key. </p>
 
 <h3>Image + Mask</h3>
 
-***EXAMPLE IMAGE HERE***
 
 ```python
 import torch
@@ -170,7 +160,6 @@ result.save("fibo_edit_result.png")
 
 <h3>Only Image</h3>
 
-***EXAMPLE IMAGE HERE***
 
 ```python
 import torch
@@ -201,22 +190,6 @@ result = pipe(
 
 result.save("fibo_edit_result.png")
 ```
-
-# Need to replace the examples with the new ones
-## more Examples
-<div class="image-row">
-  <figure>
-    <img src="https://bria-public.s3.us-east-1.amazonaws.com/original.png" alt="original image"/>
-    <figcaption>original image</figcaption>
-  </figure>
-  <figure>
-    <img src="https://bria-public.s3.us-east-1.amazonaws.com/no_prompt.png" alt="No prompt"/>
-    <figcaption>Inspire #1: No prompt</figcaption>
-  </figure>
-  <figure>
-    <img src="https://bria-public.s3.us-east-1.amazonaws.com/make_futuristic.png" alt="Make futuristic"/>
-    <figcaption>Inspire #2: Make futuristic</figcaption>
-  </figure>
   
 </div>
 <h3>Advanced Usage</h3>
@@ -238,19 +211,8 @@ result.save("fibo_edit_result.png")
   </ol>
 </details>
 <p>see the examples in the <a href="examples">examples</a> directory for more details.</p>
-<h2>🧠 Training and Architecture</h2>
-<p><strong>Fibo Edit</strong> is an 8B-parameter DiT-based, flow-matching text-to-image model trained <strong>exclusively on licensed data</strong> and on <strong>&gt; long, structured JSON captions</strong> (~1,000 words each), enabling strong prompt adherence and professional-grade control. It uses <strong>SmolLM3-3B</strong> as the text encoder with a novel <strong>DimFusion</strong> conditioning architecture for efficient long-caption training, and <strong>Wan 2.2</strong> as the VAE. The structured supervision promotes native disentanglement for targeted, iterative refinement without prompt drift, while VLM-assisted prompting expands short user intents, fills in missing details, and extracts/edits structured prompts from images using our fine-tuned <strong>Qwen-2.5</strong>-based VLM or <strong>Gemini 2.5 Flash</strong>. For reproducibility, we provide the assistant system prompt and the structured-prompt JSON schema across the “Generate,” “Refine,” and “Inspire” modes.</p>
 
 
-# Need to replace the examples with the new ones
-
-<h2 id="More Samples">More Samples</h2>
-<p>Generate</p>
-<img src="https://bria-public.s3.us-east-1.amazonaws.com/Generate.png" alt="Benchmark Chart" width="800"/>
-<p>Inspire & Refine</p>
-<img src="https://bria-public.s3.us-east-1.amazonaws.com/Refine.ong.png" alt="Benchmark Chart" width="800"/>
-
-  
 <p>If you have questions about this repository, feedback to share, or want to contribute directly, we welcome your issues and pull requests on GitHub. Your contributions help make FIBO better for everyone.</p>
 <p>If you're passionate about fundamental research, we're hiring full-time employees (FTEs) and research interns. Don't wait - reach out to us at hr@bria.ai</p>
 
