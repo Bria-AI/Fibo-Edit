@@ -1,0 +1,24 @@
+[project]
+name = "fibo-edit"
+version = "0.1.0"
+description = "Fibo Edit"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "boltons>=25.0.0",
+    "litellm>=1.80.16",
+    "pillow>=12.1.0",
+    "pydantic>=2.12.5",
+    "requests>=2.32.5",
+    "ujson>=5.11.0",
+    "diffusers",
+    "accelerate",
+    "protobuf>=6.33.4",
+    "sentencepiece",
+    "transformers",
+    "torch",
+    "torchvision",
+]
+
+[tool.uv.sources]
+diffusers = { git = "https://github.com/galbria/diffusers.git", rev = "fibo-edit-pipeline" }

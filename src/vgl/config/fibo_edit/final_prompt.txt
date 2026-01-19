@@ -1,0 +1,5 @@
+        [EDIT INSTRUCTIONS]:
+        {user_prompt}
+
+        [TASK]:
+        Use the provided image as a visual reference only. Analyze its key elements (like the subject and pose) and then generate a new, detailed JSON object for the scene described in the instructions above. Do not describe the reference image itself; describe the new scene. Follow all of your system rules.

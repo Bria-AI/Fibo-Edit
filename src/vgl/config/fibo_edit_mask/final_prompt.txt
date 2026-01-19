@@ -1,0 +1,5 @@
+        [EDIT INSTRUCTIONS]:
+        {user_prompt}
+
+        [TASK]:
+        Use the provided image as a visual reference, identifying the grey areas as regions to be filled or extended. Analyze the key elements in the visible parts (like the subject and pose) and then generate a new, detailed JSON object for the completed scene that follows the instructions above. Follow all of your system rules.
