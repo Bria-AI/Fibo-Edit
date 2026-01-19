@@ -58,7 +58,7 @@
 
 <p align="center">
   <b>FIBO-Edit brings the power of structured prompt generation to image editing.</b><br>
-  Built on Fibo's</a> foundation and of JSON-native control (the new <a href="https://docs.bria.ai/vgl">VGL - Visual GenAI Language paradigm</a>), FIBO-Edit delivers precise, deterministic, and fully controllable edits. No ambiguity, no surprises.
+  Built on Fibo's</a> foundation and of JSON-native control, FIBO-Edit delivers precise, deterministic, and fully controllable edits. No ambiguity, no surprises.
   <b></b>
   <br><br>
 </p>
@@ -71,6 +71,8 @@
 
 <p>📄 <i>Technical report coming soon.</i> For architecture details, see <a href="https://huggingface.co/briaai/FIBO">FIBO</a>.</p>
 
+<h2>📐 The VGL Paradigm</h2>
+<p>FIBO-Edit is natively built on <a href="https://docs.bria.ai/vgl">Visual GenAI Language (VGL)</a>. VGL standardizes image generation by replacing vague natural language descriptions with explicit, human-machine-readable JSON. By disentangling visual elements—such as lighting, composition, style, and camera parameters—VGL transforms editing from a probabilistic guessing game into a deterministic engineering task. Fibo-Edit reads these structured blueprints to perform precise updates without prompt drift, ensuring the output matches your exact specifications.</p>
 
 <h2> News</h2>
 <ul>
@@ -99,8 +101,8 @@
 <p><b>API Endpoint:</b></p>
 <ul>
   <li><a href="https://docs.bria.ai/image-generation/v2-endpoints/image-edit">Bria.ai</a></li>
-  <li><a href="https://fal.ai/models/bria/fibo-edit">Fal.ai</a></li>
-  <li><a href="https://replicate.com/bria/fibo-edit">Replicate</a></li>
+  <li><a href="https://fal.ai/models/bria/fibo-edit/edit">Fal.ai</a></li>
+  <li><a href="https://replicate.com/bria/fibo-edit">Replicate (Coming soon)</a></li>
   <li><a href="https://platform.bria.ai/labs/fibo-edit">Bria Fibo Lab</a></li>
 </ul>
 
