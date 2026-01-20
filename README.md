@@ -35,27 +35,6 @@
   </a>
 </p>
 
-<table>
-  <tr>
-    <td align="center">
-      <img src="docs/assets/Relight.gif" width="400" alt="Relight"/>
-    </td>
-    <td align="center">
-      <img src="docs/assets/Restyle.gif" width="400" alt="Restyle"/>
-    </td>
-  </tr>
-</table>
-<table>
-  <tr>
-    <td align="center">
-      <img src="docs/assets/Retype.gif" width="400" alt="Retype"/>
-    </td>
-    <td align="center">
-      <img src="docs/assets/Recolor.gif" width="400" alt="Recolor"/>
-    </td>
-  </tr>
-</table>
-
 <p align="center">
   <b>FIBO-Edit brings the power of structured prompt generation to image editing.</b><br>
   Built on Fibo's</a> foundation and of JSON-native control, FIBO-Edit delivers precise, deterministic, and fully controllable edits. No ambiguity, no surprises.
@@ -140,7 +119,6 @@ python src/example_edit.py --vlm-mode local --vlm-model briaai/FIBO-edit-prompt-
 
 <h3>Image + Mask</h3>
 
-
 ```python
 import torch
 from diffusers import DiffusionPipeline
@@ -176,7 +154,6 @@ result.save("fibo_edit_result.png")
 
 <h3>Only Image</h3>
 
-
 ```python
 import torch
 from diffusers import DiffusionPipeline
@@ -206,7 +183,26 @@ result = pipe(
 
 result.save("fibo_edit_result.png")
 ```
-  
+<table>
+  <tr>
+    <td align="center">
+      <img src="docs/assets/Relight.gif" width="400" alt="Relight"/>
+    </td>
+    <td align="center">
+      <img src="docs/assets/Restyle.gif" width="400" alt="Restyle"/>
+    </td>
+  </tr>
+</table>
+<table>
+  <tr>
+    <td align="center">
+      <img src="docs/assets/Retype.gif" width="400" alt="Retype"/>
+    </td>
+    <td align="center">
+      <img src="docs/assets/Recolor.gif" width="400" alt="Recolor"/>
+    </td>
+  </tr>
+</table>
 </div>
 <h3>Advanced Usage</h3>
 <details>
