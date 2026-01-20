@@ -20,6 +20,8 @@ uv sync
 
 ## Setup
 
+### API Mode (default)
+
 Set your Gemini API key:
 
 ```bash
@@ -28,7 +30,15 @@ export GEMINI_API_KEY="your-api-key"
 
 Get an API key from [Google AI Studio](https://aistudio.google.com/app/apikey).
 
+### Local Mode
+
+No API key required. Uses the `briaai/FIBO-edit-prompt-to-JSON` model locally via diffusers ModularPipelineBlocks.
+
+**Note:** Local mode does not support mask-based editing.
+
 ## Quick Start
+
+### API Mode (default)
 
 ```python
 from PIL import Image
@@ -36,6 +46,22 @@ from src.edit_promptify import get_prompt
 
 image = Image.open("photo.jpg")
 result = get_prompt(image, "make the sky sunset colors")
+print(result)
+```
+
+### Local Mode
+
+```python
+from PIL import Image
+from src.edit_promptify import get_prompt
+
+image = Image.open("photo.jpg")
+result = get_prompt(
+    image=image,
+    instruction="make the sky sunset colors",
+    vlm_mode="local",
+    model="briaai/FIBO-edit-prompt-to-JSON"
+)
 print(result)
 ```
 
@@ -47,13 +73,13 @@ from src.edit_promptify import get_prompt
 result = get_prompt(
     image=image,
     instruction="add a cat on the couch",
-    model="gemini/gemini-2.5-pro"
+    model="gemini/gemini-2.5-pro"  # API mode
 )
 ```
 
 ## API Reference
 
-### `get_prompt(image, instruction, model="gemini/gemini-2.5-flash")`
+### `get_prompt(image, instruction, mask_image=None, model="gemini/gemini-2.5-flash", vlm_mode="api")`
 
 Generate a structured JSON prompt for image editing.
 
@@ -61,11 +87,15 @@ Generate a structured JSON prompt for image editing.
 |-----------|------|---------|-------------|
 | `image` | `PIL.Image` | required | Input image |
 | `instruction` | `str` | required | Edit instruction (e.g., "make the dog golden") |
-| `model` | `str` | `gemini/gemini-2.5-flash` | LiteLLM model identifier |
+| `mask_image` | `PIL.Image` | `None` | Optional mask image (API mode only) |
+| `model` | `str` | `gemini/gemini-2.5-flash` | Model identifier (API: LiteLLM format, Local: HuggingFace model ID) |
+| `vlm_mode` | `str` | `api` | VLM mode: `"api"` for cloud-based (Gemini), `"local"` for local model |
 
 **Returns**: JSON string with structured image description.
 
 ## Supported Models
+
+### API Mode
 
 Any vision-capable model supported by [LiteLLM](https://docs.litellm.ai/docs/providers):
 
@@ -73,6 +103,12 @@ Any vision-capable model supported by [LiteLLM](https://docs.litellm.ai/docs/pro
 |-------|------------|------------------|
 | Gemini 2.5 Flash (default) | `gemini/gemini-2.5-flash` | `GEMINI_API_KEY` |
 | Gemini 2.5 Pro | `gemini/gemini-2.5-pro` | `GEMINI_API_KEY` |
+
+### Local Mode
+
+| Model | Identifier | Notes |
+|-------|------------|-------|
+| FIBO Edit Prompt to JSON | `briaai/FIBO-edit-prompt-to-JSON` | No API key required, runs on GPU |
 
 ## Output JSON Schema
 
@@ -139,8 +175,9 @@ The module generates JSON with the following structure:
 
 | File | Description |
 |------|-------------|
-| `edit_promptify.py` | Core module with prompt generation |
-| `example_edit.py` | Usage example |
+| `edit_promptify.py` | Core module with prompt generation (routes to API or local) |
+| `fibo_edit_vlm.py` | Local VLM implementation using ModularPipelineBlocks |
+| `example_edit.py` | CLI script for running edits |
 | `example_image.jpg` | Sample image for testing |
 
 ## Command Line Interface
@@ -155,10 +192,12 @@ python src/example_edit.py
 ### CLI Options
 
 ```
---model MODEL           LLM model for prompt generation (default: gemini/gemini-2.5-flash)
+--vlm-mode MODE         VLM mode: 'api' for cloud-based (Gemini), 'local' for local model (default: api)
+--vlm-model MODEL       VLM model for prompt generation (default: gemini/gemini-2.5-flash for api mode)
 --images PATH [PATH...] Image path(s) to edit (default: src/example_image.jpg)
 --instructions TEXT [TEXT...]
                         Edit instruction(s) (default: 'change the car color to green')
+--masks PATH [PATH...]  Mask image path(s) for inpainting (API mode only)
 --num-inference-steps N Number of inference steps (default: 50)
 --guidance-scale SCALE  Guidance scale (default: 5.0)
 ```
@@ -166,11 +205,15 @@ python src/example_edit.py
 ### Examples
 
 ```bash
-# Default (uses example_image.jpg)
+# Default - API mode (uses example_image.jpg)
 python src/example_edit.py
 
-# Single image with custom instruction
+# Single image with custom instruction (API mode)
 python src/example_edit.py --images photo.jpg --instructions "make it vintage"
+
+# Local VLM mode (no API key required)
+python src/example_edit.py --vlm-mode local --vlm-model briaai/FIBO-edit-prompt-to-JSON \
+    --images photo.jpg --instructions "make it vintage"
 
 # Multiple images with one instruction
 python src/example_edit.py --images a.jpg b.jpg --instructions "add sunset lighting"
@@ -178,9 +221,9 @@ python src/example_edit.py --images a.jpg b.jpg --instructions "add sunset light
 # One image with multiple instructions
 python src/example_edit.py --images photo.jpg --instructions "make vintage" "add rain"
 
-# Custom model and parameters
+# Custom model and parameters (API mode)
 python src/example_edit.py --images photo.jpg --instructions "add snow" \
-    --model gemini/gemini-2.5-pro --num-inference-steps 30 --guidance-scale 7.0
+    --vlm-model gemini/gemini-2.5-pro --num-inference-steps 30 --guidance-scale 7.0
 ```
 
 Outputs are saved to `generated/<image_stem>_edited.jpg` and `generated/<image_stem>.txt`.

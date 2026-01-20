@@ -122,7 +122,21 @@ cd Fibo-Edit
 </code></pre>
 
 <h3>Promptify Setup</h3>
-<p>The repository currently supports only Gemini as the VLM to generate structured JSON prompts. Use <code class="language-bash">export GEMINI_API_KEY="your-api-key"</code> to set your private API key. </p>
+<p>The repository supports two modes for generating structured JSON prompts:</p>
+
+<p><b>API Mode (default):</b> Uses Gemini as the VLM. Set your API key with <code class="language-bash">export GEMINI_API_KEY="your-api-key"</code></p>
+
+<p><b>Local Mode:</b> Uses a local VLM model (<code>briaai/FIBO-edit-prompt-to-JSON</code>) via diffusers ModularPipelineBlocks. No API key required, runs entirely on your GPU.</p>
+
+```bash
+# API mode (default)
+python src/example_edit.py --images photo.jpg --instructions "change the car color to green"
+
+# Local mode
+python src/example_edit.py --vlm-mode local --vlm-model briaai/FIBO-edit-prompt-to-JSON --images photo.jpg --instructions "change the car color to green"
+```
+
+<p><b>Note:</b> Local VLM mode does not support mask-based editing. Use API mode (<code>--vlm-mode api</code>) for masked edits.</p>
 
 <h3>Image + Mask</h3>
 

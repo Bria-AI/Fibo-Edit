@@ -18,10 +18,17 @@ def parse_args():
         help="Model ID (default: briaai/Fibo-Edit)",
     )
     parser.add_argument(
+        "--vlm-mode",
+        type=str,
+        choices=["api", "local"],
+        default="api",
+        help="VLM mode: 'api' for cloud-based (Gemini), 'local' for local model",
+    )
+    parser.add_argument(
         "--vlm-model",
         type=str,
         default="gemini/gemini-2.5-flash",
-        help="VLM model for prompt generation (default: gemini/gemini-2.5-flash)",
+        help="VLM model for prompt generation (default: gemini/gemini-2.5-flash for api mode)",
     )
     parser.add_argument(
         "--images",
@@ -96,6 +103,11 @@ def main():
             f"and {len(masks)} masks. Provide matching counts or use 1 for broadcast."
         )
 
+    # Validate local VLM mode does not support masks
+    if args.vlm_mode == "local":
+        if any(m is not None for m in masks):
+            raise ValueError("Local VLM mode does not support masks. Use --vlm-mode api for masked editing.")
+
     # Process each tuple
     for image_path, instruction, mask_path in tuples:
         image = Image.open(image_path)
@@ -116,6 +128,7 @@ def main():
             instruction=instruction,
             mask_image=mask,
             model=args.vlm_model,
+            vlm_mode=args.vlm_mode,
         )
 
         pipeline_kwargs = {
