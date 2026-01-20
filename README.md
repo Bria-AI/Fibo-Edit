@@ -122,7 +122,7 @@ python src/example_edit.py --vlm-mode local --vlm-model briaai/FIBO-edit-prompt-
 
 <h3>Image + Mask</h3>
 
-<img src="https://bria-public.s3.us-east-1.amazonaws.com/Edit+Assets/Masked.png" alt="Benchmark Chart" width="800"/>
+<img src="https://bria-public.s3.us-east-1.amazonaws.com/Edit+Assets/Masked.png" alt="masked" width="800"/>
 
 ```python
 import torch
@@ -159,7 +159,7 @@ result.save("fibo_edit_result.png")
 
 <h3>Only Image</h3>
 
-<img src="https://bria-public.s3.us-east-1.amazonaws.com/Edit+Assets/RemoveObjects.png" alt="Benchmark Chart" width="800"/>
+<img src="https://bria-public.s3.us-east-1.amazonaws.com/Edit+Assets/RemoveObjects.png" alt="onlyImage" width="800"/>
 
 ```python
 import torch
