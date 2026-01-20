@@ -36,6 +36,9 @@
 </p>
 
 <p align="center">
+  <img src="https://bria-public.s3.us-east-1.amazonaws.com/Edit+Assets/RecolorHero.jpeg" width="1024" alt="Fibo Edit Hero Image"/>
+</p>
+<p align="center">
   <b>FIBO-Edit brings the power of structured prompt generation to image editing.</b><br>
   Built on Fibo's</a> foundation and of JSON-native control, FIBO-Edit delivers precise, deterministic, and fully controllable edits. No ambiguity, no surprises.
   <b></b>
@@ -119,6 +122,8 @@ python src/example_edit.py --vlm-mode local --vlm-model briaai/FIBO-edit-prompt-
 
 <h3>Image + Mask</h3>
 
+<img src="https://bria-public.s3.us-east-1.amazonaws.com/Edit+Assets/Masked.png" alt="Benchmark Chart" width="800"/>
+
 ```python
 import torch
 from diffusers import DiffusionPipeline
@@ -153,6 +158,8 @@ result.save("fibo_edit_result.png")
 
 
 <h3>Only Image</h3>
+
+<img src="https://bria-public.s3.us-east-1.amazonaws.com/Edit+Assets/RemoveObjects.png" alt="Benchmark Chart" width="800"/>
 
 ```python
 import torch
