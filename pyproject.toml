@@ -21,4 +21,4 @@ dependencies = [
 ]
 
 [tool.uv.sources]
-diffusers = { git = "https://github.com/galbria/diffusers.git", rev = "fibo-edit-pipeline" }
+diffusers = { git = "https://github.com/huggingface/diffusers.git" }

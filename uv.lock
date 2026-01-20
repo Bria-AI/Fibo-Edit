@@ -341,7 +341,7 @@ wheels = [
 [[package]]
 name = "diffusers"
 version = "0.37.0.dev0"
-source = { git = "https://github.com/galbria/diffusers.git?rev=fibo-edit-pipeline#9a52198feb0138c342e56cbdd0a62580bc899cc0" }
+source = { git = "https://github.com/huggingface/diffusers.git#d7a1c31f4f85bae5a9e01cdce49bd7346bd8ccd6" }
 dependencies = [
     { name = "filelock" },
     { name = "httpx" },
@@ -463,7 +463,7 @@ dependencies = [
 requires-dist = [
     { name = "accelerate" },
     { name = "boltons", specifier = ">=25.0.0" },
-    { name = "diffusers", git = "https://github.com/galbria/diffusers.git?rev=fibo-edit-pipeline" },
+    { name = "diffusers", git = "https://github.com/huggingface/diffusers.git" },
     { name = "litellm", specifier = ">=1.80.16" },
     { name = "pillow", specifier = ">=12.1.0" },
     { name = "protobuf", specifier = ">=6.33.4" },
