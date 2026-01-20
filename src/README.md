@@ -16,6 +16,8 @@ From the project root:
 
 ```bash
 uv sync
+source .venv/bin/activate
+export PYTHONPATH=.
 ```
 
 ## Setup
