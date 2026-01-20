@@ -82,7 +82,7 @@
 
 <p><b>API Endpoint:</b></p>
 <ul>
-  <li><a href="https://docs.bria.ai/image-generation/v2-endpoints/image-edit">Bria.ai</a></li>
+  <li><a href="https://docs.bria.ai/image-editing/v2-endpoints/edit-image">Bria.ai</a></li>
   <li><a href="https://fal.ai/models/bria/fibo-edit/edit">Fal.ai</a></li>
   <li><a href="https://replicate.com/bria/fibo-edit">Replicate (Coming soon)</a></li>
   <li><a href="https://platform.bria.ai/labs/fibo-edit">Bria Fibo Lab</a></li>
