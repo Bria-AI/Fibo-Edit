@@ -96,7 +96,7 @@
     
 <h2>Quick Start Guide</h2>
 <p> clone the repository and install the requirements</p>
-<pre><code class="language-bash">git clone https://github.com/briaai/Fibo-Edit.git
+<pre><code class="language-bash">git clone https://github.com/Bria-AI/Fibo-Edit.git
 cd Fibo-Edit
 </code></pre>
 <p>install the requirements</p>
