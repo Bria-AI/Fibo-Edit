@@ -1,4 +1,4 @@
-from src.vgl.gateway.llm_gateway import LLMGateway
+from vgl.gateway.llm_gateway import LLMGateway
 
 
 class BaseExecutor():

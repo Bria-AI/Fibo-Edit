@@ -18,7 +18,13 @@ dependencies = [
     "transformers",
     "torch",
     "torchvision",
+    "datasets>=4.5.0",
+    "peft>=0.18.1",
 ]
 
 [tool.uv.sources]
 diffusers = { git = "https://github.com/huggingface/diffusers.git" }
+
+[build-system]
+requires = ["uv_build>=0.7,<0.8"]
+build-backend = "uv_build"

@@ -6,7 +6,7 @@ import ujson
 from diffusers import BriaFiboEditPipeline
 from PIL import Image
 
-from edit_promptify import get_prompt
+from fibo_edit.edit_promptify import get_prompt
 
 
 def parse_args():
@@ -34,8 +34,8 @@ def parse_args():
         "--images",
         type=str,
         nargs="+",
-        default=["src/example_image.jpg"],
-        help="Image path(s) to edit (default: src/example_image.jpg)",
+        default=["examples/example_image.jpg"],
+        help="Image path(s) to edit (default: examples/example_image.jpg)",
     )
     parser.add_argument(
         "--instructions",
@@ -63,6 +63,24 @@ def parse_args():
         default=5.0,
         help="Guidance scale (default: 5.0)",
     )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=1,
+        help="Random seed (default: 1)",
+    )
+    parser.add_argument(
+        "--lora",
+        type=str,
+        default=None,
+        help="Path to LoRA checkpoint directory or HuggingFace model ID",
+    )
+    parser.add_argument(
+        "--lora-scale",
+        type=float,
+        default=1.0,
+        help="LoRA scale/weight (default: 1.0)",
+    )
     return parser.parse_args()
 
 
@@ -79,6 +97,12 @@ def main():
         torch_dtype=torch.bfloat16,
     )
     pipeline.to("cuda")
+
+    # Load LoRA weights if specified
+    if args.lora:
+        print(f"Loading LoRA from: {args.lora}")
+        pipeline.load_lora_weights(args.lora)
+        pipeline.fuse_lora(lora_scale=args.lora_scale)
 
     # Normalize masks list
     masks = args.masks or [None] * len(args.images)
@@ -131,11 +155,13 @@ def main():
             vlm_mode=args.vlm_mode,
         )
 
+        generator = torch.Generator(device="cuda").manual_seed(args.seed)
         pipeline_kwargs = {
             "prompt": prompt_json_str,
             "image": image,
             "num_inference_steps": args.num_inference_steps,
             "guidance_scale": args.guidance_scale,
+            "generator": generator,
         }
         if mask is not None:
             pipeline_kwargs["mask"] = mask

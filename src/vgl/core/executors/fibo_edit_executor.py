@@ -1,10 +1,10 @@
 import json
 from importlib import resources
 
-from src.vgl.core.base_executor import BaseExecutor
-from src.vgl.core.utils.caption_processor import CaptionProcessor
-from src.vgl.core.utils.image_processor import ImageProcessor
-from src.vgl.gateway.llm_gateway import LLMGateway
+from vgl.core.base_executor import BaseExecutor
+from vgl.core.utils.caption_processor import CaptionProcessor
+from vgl.core.utils.image_processor import ImageProcessor
+from vgl.gateway.llm_gateway import LLMGateway
 
 
 class FiboEditExecutor(BaseExecutor):
@@ -14,7 +14,7 @@ class FiboEditExecutor(BaseExecutor):
         self.llm = llm or self.default_llm
     
     def prepare_prompts_and_schema(self, user_prompt: str, base_path: str):
-        package_path = f"src.vgl.config.{base_path}"
+        package_path = f"vgl.config.{base_path}"
         pkg = resources.files(package_path)
 
         input_schema_text = pkg.joinpath("input_schema.txt").read_text()
