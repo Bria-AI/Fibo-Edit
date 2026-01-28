@@ -122,29 +122,29 @@ uv run python scripts/example_edit.py --vlm-mode local --vlm-model briaai/FIBO-e
 
 ```python
 import torch
-from diffusers import DiffusionPipeline
+from diffusers import BriaFiboEditPipeline
 from PIL import Image
-from fibo_edit.edit_promptify import edit_image_with_mask
+
+from fibo_edit.edit_promptify import get_prompt
 
 # 1. Load the pipeline
-pipe = DiffusionPipeline.from_pretrained(
-    "briaai/Fibo-Edit",
-    torch_dtype=torch.bfloat16,
-)
-pipe.to("cuda")
+pipeline = BriaFiboEditPipeline.from_pretrained(
+        "briaai/Fibo-Edit",
+        torch_dtype=torch.bfloat16,
+    )
+pipeline.to("cuda")
 
 # 2. Load your source image and mask
-source_image = Image.open("path/to/image.png")
-mask_image = Image.open("path/to/mask.png")
+source_image = Image.open("examples/example_image.jpg")
+mask_image = Image.open("examples/example_mask.jpg")
 
 # 3. Generate structured JSON prompt using edit_promptify
 # This uses a VLM to analyze the image and create a detailed structured prompt
-prompt = edit_image_with_mask(source_image, "change the car to red velvet texture", mask_image)
-
+prompt = get_prompt(image=source_image, instruction="change the car color to green", mask_image=mask_image)
 # 4. Run the edit
-result = pipe(
+result = pipeline(
     image=source_image,
-    mask_image=mask_image,
+    mask=mask_image,
     prompt=prompt,
     num_inference_steps=50
 ).images[0]
@@ -159,26 +159,27 @@ result.save("fibo_edit_result.png")
 
 ```python
 import torch
-from diffusers import DiffusionPipeline
+from diffusers import BriaFiboEditPipeline
 from PIL import Image
-from fibo_edit.edit_promptify import edit_image
+
+from fibo_edit.edit_promptify import get_prompt
 
 # 1. Load the pipeline
-pipe = DiffusionPipeline.from_pretrained(
-    "briaai/Fibo-Edit",
-    torch_dtype=torch.bfloat16,
-)
-pipe.to("cuda")
+pipeline = BriaFiboEditPipeline.from_pretrained(
+        "briaai/Fibo-Edit",
+        torch_dtype=torch.bfloat16,
+    )
+pipeline.to("cuda")
 
-# 2. Load your source image
-source_image = Image.open("path/to/image.png")
+# 2. Load your source image and mask
+source_image = Image.open("examples/example_image.jpg")
 
 # 3. Generate structured JSON prompt using edit_promptify
 # This uses a VLM to analyze the image and create a detailed structured prompt
-prompt = edit_image(source_image, "change car to a motorcycle")
+prompt = get_prompt(image=source_image, instruction="change the car color to green")
 
 # 4. Run the edit
-result = pipe(
+result = pipeline(
     image=source_image,
     prompt=prompt,
     num_inference_steps=50
