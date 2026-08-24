@@ -2,7 +2,15 @@
   <img src="https://bria-public.s3.us-east-1.amazonaws.com/Bria-logo.svg" width="200"/>
 </p>
 
- <a href="https://huggingface.co/briaai/Fibo-Edit-1.5-base" target="_blank">
+ <a href="https://huggingface.co/briaai/Fibo-Edit-1.5-turbo" target="_blank">
+    <img
+      alt="Turbo Model Card"
+      src="https://img.shields.io/badge/Hugging%20Face-Turbo-FFD21E?logo=huggingface&logoColor=black&style=for-the-badge"
+    />
+  </a>
+  &nbsp;
+
+  <a href="https://huggingface.co/briaai/Fibo-Edit-1.5-base" target="_blank">
     <img
       alt="Model Card"
       src="https://img.shields.io/badge/Hugging%20Face-Model-FFD21E?logo=huggingface&logoColor=black&style=for-the-badge"
@@ -121,78 +129,12 @@ uv run python scripts/example_edit.py --vlm-mode local --vlm-model briaai/FIBO-e
 
 <p><b>Note:</b> Local VLM mode supports neither mask-based editing nor multiple references. Use API mode (<code>--vlm-mode api</code>), backed by <a href="https://huggingface.co/briaai/FIBO-edit-gemini-prompt-to-JSON">briaai/FIBO-edit-gemini-prompt-to-JSON</a>, for masked edits and multi-reference edits.</p>
 
-<h3>Image + Mask</h3>
-
-```python
-import torch
-from diffusers import BriaFiboEditPipeline
-from PIL import Image
-
-from fibo_edit.edit_promptify import get_prompt
-
-# 1. Load the pipeline
-pipeline = BriaFiboEditPipeline.from_pretrained(
-        "briaai/Fibo-Edit-1.5-base",
-        torch_dtype=torch.bfloat16,
-    )
-pipeline.to("cuda")
-
-# 2. Load your source image and mask
-source_image = Image.open("examples/example_image.jpg")
-mask_image = Image.open("examples/example_mask.jpg")
-
-# 3. Generate structured JSON prompt using edit_promptify
-# This uses a VLM to analyze the image and create a detailed structured prompt
-prompt = get_prompt(image=source_image, instruction="change the car color to green", mask_image=mask_image)
-# 4. Run the edit
-result = pipeline(
-    image=source_image,
-    mask=mask_image,
-    prompt=prompt,
-    num_inference_steps=30
-).images[0]
-
-result.save("fibo_edit_result.png")
-```
-
-
-<h3>Multiple References</h3>
-
-<p>Pass a list of images to compose one edit from several references. Each reference keeps its own
-resolution, and the instruction addresses them as <code>&lt;image_1&gt;</code>, <code>&lt;image_2&gt;</code>, and so
-on. Multi-reference editing needs API mode.</p>
-
-```python
-subject = Image.open("examples/subject.jpg")
-setting = Image.open("examples/setting.jpg")
-
-prompt = get_prompt(image=[subject, setting], instruction="Place the subject from <image_1> into <image_2>")
-result = pipeline(image=[subject, setting], prompt=prompt, num_inference_steps=30).images[0]
-```
-
-<p>From the command line, several <code>--images</code> make one multi-reference edit:</p>
-
-```bash
-uv run python scripts/example_edit.py --images subject.jpg setting.jpg \
-  --instructions "Place the subject from <image_1> into <image_2>"
-```
-
-<h3>Turbo</h3>
-
-<p><a href="https://huggingface.co/briaai/Fibo-Edit-1.5-turbo">briaai/Fibo-Edit-1.5-turbo</a> is the same
-model distilled to 4 steps. Swap the checkpoint and drop guidance to 1.0; everything else is unchanged.</p>
-
-```python
-pipeline = BriaFiboEditPipeline.from_pretrained("briaai/Fibo-Edit-1.5-turbo", torch_dtype=torch.bfloat16)
-pipeline.to("cuda")
-
-result = pipeline(image=source_image, prompt=prompt, num_inference_steps=4, guidance_scale=1.0).images[0]
-```
-
 <h3>Only Image</h3>
 
 <img src="https://bria-public.s3.us-east-1.amazonaws.com/Edit+Assets/RemoveObjects.png" alt="onlyImage" width="800"/>
 
+<p>The full setup. Every snippet below builds on these imports.</p>
+
 ```python
 import torch
 from diffusers import BriaFiboEditPipeline
@@ -207,7 +149,7 @@ pipeline = BriaFiboEditPipeline.from_pretrained(
     )
 pipeline.to("cuda")
 
-# 2. Load your source image and mask
+# 2. Load your source image
 source_image = Image.open("examples/example_image.jpg")
 
 # 3. Generate structured JSON prompt using edit_promptify
@@ -223,6 +165,72 @@ result = pipeline(
 
 result.save("fibo_edit_result.png")
 ```
+<h3>Turbo</h3>
+
+<p><a href="https://huggingface.co/briaai/Fibo-Edit-1.5-turbo">briaai/Fibo-Edit-1.5-turbo</a> is the same
+model distilled to 4 steps. Swap the checkpoint and drop guidance to 1.0; everything else is unchanged. It reuses <code>source_image</code> and <code>prompt</code> from above.</p>
+
+```python
+pipeline = BriaFiboEditPipeline.from_pretrained("briaai/Fibo-Edit-1.5-turbo", torch_dtype=torch.bfloat16)
+pipeline.to("cuda")
+
+result = pipeline(image=source_image, prompt=prompt, num_inference_steps=4, guidance_scale=1.0).images[0]
+```
+
+<h3>Multiple References</h3>
+
+<p>Pass a list of images to compose one edit from several references. Each reference keeps its own
+resolution, and the instruction addresses them as <code>&lt;image_1&gt;</code>, <code>&lt;image_2&gt;</code>, and so
+on. Multi-reference editing needs API mode, and works with either checkpoint &mdash; this example continues with the turbo pipeline above.</p>
+
+```python
+subject = Image.open("examples/subject.jpg")
+setting = Image.open("examples/setting.jpg")
+
+prompt = get_prompt(image=[subject, setting], instruction="Place the subject from <image_1> into <image_2>")
+result = pipeline(image=[subject, setting], prompt=prompt, num_inference_steps=4, guidance_scale=1.0).images[0]
+```
+
+<p>From the command line, several <code>--images</code> make one multi-reference edit:</p>
+
+```bash
+uv run python scripts/example_edit.py --model-id briaai/Fibo-Edit-1.5-turbo \
+  --images subject.jpg setting.jpg \
+  --instructions "Place the subject from <image_1> into <image_2>"
+```
+
+<h3>Image + Mask</h3>
+
+<p>Restrict an edit to a region by passing a mask. Masked editing takes a single reference image.
+This continues the first example, so it reloads the base checkpoint that the turbo snippet replaced.</p>
+
+```python
+# 1. Back to the base checkpoint
+pipeline = BriaFiboEditPipeline.from_pretrained(
+        "briaai/Fibo-Edit-1.5-base",
+        torch_dtype=torch.bfloat16,
+    )
+pipeline.to("cuda")
+
+# 2. Load your source image and mask
+source_image = Image.open("examples/example_image.jpg")
+mask_image = Image.open("examples/example_mask.jpg")
+
+# 3. Generate the structured JSON prompt, mask included
+prompt = get_prompt(image=source_image, instruction="change the car color to green", mask_image=mask_image)
+
+# 4. Run the edit
+result = pipeline(
+    image=source_image,
+    mask=mask_image,
+    prompt=prompt,
+    num_inference_steps=30
+).images[0]
+
+result.save("fibo_edit_result.png")
+```
+
+
 <table>
   <tr>
     <td align="center">
@@ -301,6 +309,9 @@ uv run python scripts/example_edit.py --images photo.jpg --instructions "turn th
 
 <h2>Finetuning</h2>
 <p>Fibo-Edit supports LoRA finetuning to adapt the model to your specific editing tasks and domains.</p>
+
+<p><b>Note:</b> Finetune the base checkpoint, <code>briaai/Fibo-Edit-1.5-base</code>. The turbo
+checkpoint cannot be finetuned.</p>
 
 <h3>Dataset Preparation</h3>
 <p>Prepare a directory with paired input/output images and a <code>metadata.csv</code> file:</p>
