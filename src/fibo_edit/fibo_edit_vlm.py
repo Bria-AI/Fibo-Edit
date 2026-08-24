@@ -7,9 +7,17 @@ from diffusers.modular_pipelines import ModularPipelineBlocks
 _pipeline_cache = {}
 
 
-def generate_prompt_local(image, instruction, model="briaai/FIBO-edit-prompt-to-JSON"):
-    """Generate edit prompt JSON using local VLM pipeline."""
-    global _pipeline_cache
+def generate_prompt_local(image, instruction, mask_image=None, model="briaai/FIBO-edit-prompt-to-JSON"):
+    """Generate edit prompt JSON locally for one reference image; masks are not supported."""
+    if isinstance(image, (list, tuple)):
+        if len(image) > 1:
+            raise ValueError(
+                "Local VLM mode supports one reference image only. Use vlm_mode=\"api\", which supports multiple references."
+            )
+        if image:
+            image = image[0]
+    if mask_image is not None:
+        raise ValueError("Local VLM mode does not support masked edits. Use vlm_mode=\"api\" for masked edits.")
 
     # Cache pipeline for reuse
     if model not in _pipeline_cache:

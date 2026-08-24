@@ -49,7 +49,7 @@ def parse_args():
     parser.add_argument(
         "--pretrained_model_name_or_path",
         type=str,
-        default="briaai/Fibo-Edit",
+        default="briaai/Fibo-Edit-1.5-base",
         required=False,
     )
     parser.add_argument(

@@ -25,6 +25,11 @@ dependencies = [
 [tool.uv.sources]
 diffusers = { git = "https://github.com/huggingface/diffusers.git" }
 
+[tool.uv.build-backend]
+# Without this only src/fibo_edit is packaged and `import vgl` fails in a
+# non-editable install, breaking API-mode promptify.
+module-name = ["fibo_edit", "vgl"]
+
 [build-system]
-requires = ["uv_build>=0.7,<0.8"]
+requires = ["uv_build>=0.8,<0.9"]
 build-backend = "uv_build"

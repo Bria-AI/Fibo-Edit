@@ -14,8 +14,8 @@ def parse_args():
     parser.add_argument(
         "--model-id",
         type=str,
-        default="briaai/Fibo-Edit",
-        help="Model ID (default: briaai/Fibo-Edit)",
+        default="briaai/Fibo-Edit-1.5-base",
+        help="Model ID (default: briaai/Fibo-Edit-1.5-base)",
     )
     parser.add_argument(
         "--vlm-mode",
@@ -54,8 +54,8 @@ def parse_args():
     parser.add_argument(
         "--num-inference-steps",
         type=int,
-        default=50,
-        help="Number of inference steps (default: 50)",
+        default=30,
+        help="Number of inference steps (default: 30)",
     )
     parser.add_argument(
         "--guidance-scale",
@@ -91,25 +91,18 @@ def main():
     output_dir = Path("generated")
     output_dir.mkdir(exist_ok=True)
 
-    # Load pipeline once
-    pipeline = BriaFiboEditPipeline.from_pretrained(
-        args.model_id,
-        torch_dtype=torch.bfloat16,
-    )
-    pipeline.to("cuda")
-
-    # Load LoRA weights if specified
-    if args.lora:
-        print(f"Loading LoRA from: {args.lora}")
-        pipeline.load_lora_weights(args.lora)
-        pipeline.fuse_lora(lora_scale=args.lora_scale)
-
     # Normalize masks list
     masks = args.masks or [None] * len(args.images)
     masks = [None if m and m.lower() == "none" else m for m in masks]
 
-    # Build list of (image_path, instruction, mask_path) tuples
-    if len(args.instructions) == 1 and len(masks) == 1:
+    # Build list of (image path or ordered reference paths, instruction, mask path) tuples
+    if len(args.images) >= 2:
+        if len(args.instructions) != 1:
+            raise ValueError("Multi-reference editing requires exactly one instruction.")
+        if any(mask is not None for mask in masks):
+            raise ValueError("Masks support a single reference image only; omit --masks for multi-reference editing.")
+        tuples = [(args.images, args.instructions[0], None)]
+    elif len(args.instructions) == 1 and len(masks) == 1:
         # Single instruction and mask applied to all images
         tuples = [(img, args.instructions[0], masks[0]) for img in args.images]
     elif len(args.images) == 1 and len(masks) == 1:
@@ -131,18 +124,37 @@ def main():
     if args.vlm_mode == "local":
         if any(m is not None for m in masks):
             raise ValueError("Local VLM mode does not support masks. Use --vlm-mode api for masked editing.")
+        if len(args.images) > 1:
+            raise ValueError("Local VLM mode supports one reference image only. Use --vlm-mode api for multiple references.")
+
+    # Load the pipeline only once every argument has been validated
+    pipeline = BriaFiboEditPipeline.from_pretrained(
+        args.model_id,
+        torch_dtype=torch.bfloat16,
+    )
+    pipeline.to("cuda")
+
+    # Load LoRA weights if specified
+    if args.lora:
+        print(f"Loading LoRA from: {args.lora}")
+        pipeline.load_lora_weights(args.lora)
+        pipeline.fuse_lora(lora_scale=args.lora_scale)
 
     # Process each tuple
-    for image_path, instruction, mask_path in tuples:
-        image = Image.open(image_path)
-        img_stem = Path(image_path).stem
+    for image_paths, instruction, mask_path in tuples:
+        if isinstance(image_paths, list):
+            image = [Image.open(image_path) for image_path in image_paths]
+            img_stem = f"{Path(image_paths[0]).stem}_multiref"
+        else:
+            image = Image.open(image_paths)
+            img_stem = Path(image_paths).stem
 
         # Load mask if provided (as grayscale)
         mask = None
         if mask_path:
             mask = Image.open(mask_path).convert("L")
 
-        print(f"Processing: {image_path}")
+        print(f"Processing: {image_paths}")
         print(f"Instruction: {instruction}")
         if mask_path:
             print(f"Mask: {mask_path}")

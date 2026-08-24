@@ -2,7 +2,7 @@
   <img src="https://bria-public.s3.us-east-1.amazonaws.com/Bria-logo.svg" width="200"/>
 </p>
 
- <a href="https://huggingface.co/briaai/Fibo-Edit" target="_blank">
+ <a href="https://huggingface.co/briaai/Fibo-Edit-1.5-base" target="_blank">
     <img
       alt="Model Card"
       src="https://img.shields.io/badge/Hugging%20Face-Model-FFD21E?logo=huggingface&logoColor=black&style=for-the-badge"
@@ -58,6 +58,9 @@
 
 <h2> News</h2>
 <ul>
+  <li>2026-08-24: Fibo Edit 1.5 Turbo released: the same model distilled to 4 steps ⚡</li>
+  <li>2026-08-24: Fibo Edit 1.5 released, now the default checkpoint 🎉</li>
+  <li>2026-08-24: Multi-reference editing: compose an edit from several reference images 🖼️</li>
   <li>2026-1-16: Fibo Edit released on Hugging Face 🎉</li>
   <li>2026-1-16: Integrated with Diffusers library 🧨</li>
 </ul>
@@ -106,7 +109,7 @@ uv sync
 
 <p><b>API Mode (default):</b> Uses Gemini as the VLM. Set your API key with <code class="language-bash">export GEMINI_API_KEY="your-api-key"</code></p>
 
-<p><b>Local Mode:</b> Uses a local VLM model (<code>briaai/FIBO-edit-prompt-to-JSON</code>) via diffusers ModularPipelineBlocks. No API key required, runs entirely on your GPU.</p>
+<p><b>Local Mode:</b> Uses a local VLM model (<code>briaai/FIBO-edit-prompt-to-JSON</code>) via diffusers ModularPipelineBlocks. No API key required, runs entirely on your GPU. It takes a single reference image only.</p>
 
 ```bash
 # API mode (default)
@@ -116,7 +119,7 @@ uv run python scripts/example_edit.py --images photo.jpg --instructions "change 
 uv run python scripts/example_edit.py --vlm-mode local --vlm-model briaai/FIBO-edit-prompt-to-JSON --images photo.jpg --instructions "change the car color to green"
 ```
 
-<p><b>Note:</b> Local VLM mode does not support mask-based editing. Use API mode (<code>--vlm-mode api</code>) for masked edits.</p>
+<p><b>Note:</b> Local VLM mode supports neither mask-based editing nor multiple references. Use API mode (<code>--vlm-mode api</code>), backed by <a href="https://huggingface.co/briaai/FIBO-edit-gemini-prompt-to-JSON">briaai/FIBO-edit-gemini-prompt-to-JSON</a>, for masked edits and multi-reference edits.</p>
 
 <h3>Image + Mask</h3>
 
@@ -129,7 +132,7 @@ from fibo_edit.edit_promptify import get_prompt
 
 # 1. Load the pipeline
 pipeline = BriaFiboEditPipeline.from_pretrained(
-        "briaai/Fibo-Edit",
+        "briaai/Fibo-Edit-1.5-base",
         torch_dtype=torch.bfloat16,
     )
 pipeline.to("cuda")
@@ -146,12 +149,45 @@ result = pipeline(
     image=source_image,
     mask=mask_image,
     prompt=prompt,
-    num_inference_steps=50
+    num_inference_steps=30
 ).images[0]
 
 result.save("fibo_edit_result.png")
 ```
 
+
+<h3>Multiple References</h3>
+
+<p>Pass a list of images to compose one edit from several references. Each reference keeps its own
+resolution, and the instruction addresses them as <code>&lt;image_1&gt;</code>, <code>&lt;image_2&gt;</code>, and so
+on. Multi-reference editing needs API mode.</p>
+
+```python
+subject = Image.open("examples/subject.jpg")
+setting = Image.open("examples/setting.jpg")
+
+prompt = get_prompt(image=[subject, setting], instruction="Place the subject from <image_1> into <image_2>")
+result = pipeline(image=[subject, setting], prompt=prompt, num_inference_steps=30).images[0]
+```
+
+<p>From the command line, several <code>--images</code> make one multi-reference edit:</p>
+
+```bash
+uv run python scripts/example_edit.py --images subject.jpg setting.jpg \
+  --instructions "Place the subject from <image_1> into <image_2>"
+```
+
+<h3>Turbo</h3>
+
+<p><a href="https://huggingface.co/briaai/Fibo-Edit-1.5-turbo">briaai/Fibo-Edit-1.5-turbo</a> is the same
+model distilled to 4 steps. Swap the checkpoint and drop guidance to 1.0; everything else is unchanged.</p>
+
+```python
+pipeline = BriaFiboEditPipeline.from_pretrained("briaai/Fibo-Edit-1.5-turbo", torch_dtype=torch.bfloat16)
+pipeline.to("cuda")
+
+result = pipeline(image=source_image, prompt=prompt, num_inference_steps=4, guidance_scale=1.0).images[0]
+```
 
 <h3>Only Image</h3>
 
@@ -166,7 +202,7 @@ from fibo_edit.edit_promptify import get_prompt
 
 # 1. Load the pipeline
 pipeline = BriaFiboEditPipeline.from_pretrained(
-        "briaai/Fibo-Edit",
+        "briaai/Fibo-Edit-1.5-base",
         torch_dtype=torch.bfloat16,
     )
 pipeline.to("cuda")
@@ -182,7 +218,7 @@ prompt = get_prompt(image=source_image, instruction="change the car color to gre
 result = pipeline(
     image=source_image,
     prompt=prompt,
-    num_inference_steps=50
+    num_inference_steps=30
 ).images[0]
 
 result.save("fibo_edit_result.png")
@@ -399,7 +435,7 @@ uv run python scripts/example_edit.py \
 from diffusers import BriaFiboEditPipeline
 import torch
 
-pipeline = BriaFiboEditPipeline.from_pretrained("briaai/Fibo-Edit", torch_dtype=torch.bfloat16)
+pipeline = BriaFiboEditPipeline.from_pretrained("briaai/Fibo-Edit-1.5-base", torch_dtype=torch.bfloat16)
 pipeline.to("cuda")
 
 # Load and fuse LoRA weights
@@ -407,7 +443,7 @@ pipeline.load_lora_weights("/path/to/output/checkpoint_1000")
 pipeline.fuse_lora(lora_scale=1.0)
 
 # Use the pipeline as normal
-result = pipeline(image=source_image, prompt=prompt, num_inference_steps=50).images[0]
+result = pipeline(image=source_image, prompt=prompt, num_inference_steps=30).images[0]
 ```
 
 <h3>Tips</h3>

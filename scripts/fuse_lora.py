@@ -22,7 +22,7 @@ def parse_args():
     parser.add_argument(
         "--pretrained_model_name_or_path",
         type=str,
-        default="briaai/Fibo-Edit",
+        default="briaai/Fibo-Edit-1.5-base",
         help="Path to pretrained model or model identifier from Hugging Face",
     )
     parser.add_argument(
