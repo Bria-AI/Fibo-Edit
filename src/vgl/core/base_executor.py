@@ -3,7 +3,7 @@ from vgl.gateway.llm_gateway import LLMGateway
 
 class BaseExecutor():
     def __init__(self, llm=None):
-        self.llm = "vertex_ai/gemini-2.5-flash" if llm is None else llm
+        self.llm = "vertex_ai/gemini-3.5-flash-lite" if llm is None else llm
 
     def execute(self, model_name, system_prompt, user_prompt, 
                 images, temperature, seed, response_schema, 

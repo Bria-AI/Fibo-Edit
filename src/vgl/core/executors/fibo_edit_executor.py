@@ -10,7 +10,7 @@ from vgl.gateway.llm_gateway import LLMGateway
 
 
 class FiboEditExecutor(BaseExecutor):
-    default_llm = "vertex_ai/gemini-2.5-flash"
+    default_llm = "vertex_ai/gemini-3.5-flash-lite"
 
     def __init__(self, llm=None):
         self.llm = llm or self.default_llm

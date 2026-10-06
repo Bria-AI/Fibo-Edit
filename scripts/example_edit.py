@@ -27,8 +27,8 @@ def parse_args():
     parser.add_argument(
         "--vlm-model",
         type=str,
-        default="gemini/gemini-2.5-flash",
-        help="VLM model for prompt generation (default: gemini/gemini-2.5-flash for api mode)",
+        default="gemini/gemini-3.5-flash-lite",
+        help="VLM model for prompt generation (default: gemini/gemini-3.5-flash-lite for api mode)",
     )
     parser.add_argument(
         "--images",

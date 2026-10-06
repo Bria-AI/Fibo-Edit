@@ -5,7 +5,7 @@ from vgl import generate_prompt
 from vgl.registry import PromptMode
 
 
-def get_prompt(image, instruction, mask_image=None, model="gemini/gemini-2.5-flash", vlm_mode="api"):
+def get_prompt(image, instruction, mask_image=None, model="gemini/gemini-3.5-flash-lite", vlm_mode="api"):
     """Generate edit prompt using either API or local VLM mode.
 
     Args:

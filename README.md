@@ -289,7 +289,7 @@ uv run python scripts/example_edit.py --images photo.jpg --instructions "make vi
 
 # Custom model and parameters
 uv run python scripts/example_edit.py --images photo.jpg --instructions "add snow" \
-    --model gemini/gemini-2.5-pro --num-inference-steps 30 --guidance-scale 7.0
+    --model gemini/gemini-3.5-flash-lite --num-inference-steps 30 --guidance-scale 7.0
 
 # With a LoRA model
 uv run python scripts/example_edit.py --images photo.jpg --instructions "turn this image into an impressionist oil painting" --lora /path/to/lora
@@ -298,7 +298,7 @@ uv run python scripts/example_edit.py --images photo.jpg --instructions "turn th
 <h4>CLI Options</h4>
 
 ```
---model                  LLM model for prompt generation (default: gemini/gemini-2.5-flash)
+--model                  LLM model for prompt generation (default: gemini/gemini-3.5-flash-lite)
 --images                 Image path(s) to edit
 --instructions           Edit instruction(s)
 --num-inference-steps    Number of inference steps (default: 50)
