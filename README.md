@@ -469,7 +469,7 @@ result = pipeline(image=source_image, prompt=prompt, num_inference_steps=30).ima
 ## Get Involved
 
 <p>If you have questions about this repository, feedback to share, or want to contribute directly, we welcome your issues and pull requests on GitHub. Your contributions help make FIBO better for everyone.</p>
-<p>If you're passionate about fundamental research, we're hiring full-time employees (FTEs) and research interns. Don't wait - reach out to us at hr@bria.ai</p>
+<p>If you're passionate about fundamental research, we're hiring full-time employees (FTEs) and research interns. Don't wait - see our open roles at <a href="https://bria.ai/careers">bria.ai/careers</a></p>
 
 ## Citation
 We kindly encourage citation of our work if you find it useful.
